@@ -7,34 +7,33 @@ using dndSim.Validate;
 using dndSim.Models.Heroes;
 using dndSim.Models.Heroes.Barbarians;
 using dndSim.Models.Heroes.Barbarians.SubClasses;
+using dndSim.Validate;
 
 namespace dndSim.Test.Heroes
 {
     [TestFixture]
     public class TestBarbarian
     {
-        private ValidateCharacter validate = new ValidateCharacter();
-        private ValidateHero vh = new ValidateHero();
 
         public String validateCharacter(Hero hero)
         {
             String correct = "";
-            correct += validate.validateAttributesBarabarian("Strength", hero.Strength);
-            correct += validate.validateAttributes("Dexterity", hero.Dexterity);
-            correct += validate.validateAttributes("Wisdom", hero.Wisdom);
-            correct += validate.validateAttributesBarabarian("Constitution", hero.Constitution);
-            correct += validate.validateAttributes("Intelligence", hero.Intelligence);
-            correct += validate.validateAttributes("Charisma", hero.Charisma);
+            correct += ValidateCharacter.validateAttributesBarabarian("Strength", hero.Strength);
+            correct += ValidateCharacter.validateAttributes("Dexterity", hero.Dexterity);
+            correct += ValidateCharacter.validateAttributes("Wisdom", hero.Wisdom);
+            correct += ValidateCharacter.validateAttributesBarabarian("Constitution", hero.Constitution);
+            correct += ValidateCharacter.validateAttributes("Intelligence", hero.Intelligence);
+            correct += ValidateCharacter.validateAttributes("Charisma", hero.Charisma);
             return correct;
         }
 
         /*Should also be in its own validation class*/
-        public String validateHero(Hero hero, String validSave1, String validSave2)
+        public String validateHeroTest(Hero hero, String validSave1, String validSave2)
         {
             String correct = "";
-            correct += vh.validateSavingThrows(hero, validSave1, validSave2);
-            correct += vh.validateNonproficientSavingThrows(hero, validSave1, validSave2);
-            correct += vh.validateProficiency(hero.Level, hero.Proficiency);
+            correct += ValidateHero.validateSavingThrows(hero, validSave1, validSave2);
+            correct += ValidateHero.validateNonproficientSavingThrows(hero, validSave1, validSave2);
+            correct += ValidateHero.validateProficiency(hero.Level, hero.Proficiency);
             correct += hero.TempHp == 0 ? "" : "Temp Hp is greater than 0";
             correct += hero.Level > 0 && hero.Level < 21 ? "" : "Level is " + hero.Level;
             return correct;
@@ -257,11 +256,11 @@ namespace dndSim.Test.Heroes
         [Test]
         public void validateValidateAttributes()
         {
-            Assert.AreNotEqual("", validate.validateAttributes("test", 21));
-            Assert.AreNotEqual("", validate.validateAttributes("test", -1));
+            Assert.AreNotEqual("", ValidateCharacter.validateAttributes("test", 21));
+            Assert.AreNotEqual("", ValidateCharacter.validateAttributes("test", -1));
 
-            Assert.AreEqual("", validate.validateAttributes("test", 20));
-            Assert.AreEqual("", validate.validateAttributes("test", 3));
+            Assert.AreEqual("", ValidateCharacter.validateAttributes("test", 20));
+            Assert.AreEqual("", ValidateCharacter.validateAttributes("test", 3));
         }
 
         [Test]
@@ -272,7 +271,7 @@ namespace dndSim.Test.Heroes
             {
                 barb = new Barbarian();
                 Assert.AreEqual("", validateCharacter(barb));
-                Assert.AreEqual("", validateHero(barb,"StrSave", "ConSave"));
+                Assert.AreEqual("", validateHeroTest(barb,"StrSave", "ConSave"));
                 validateLevel20(barb);
             }
         }

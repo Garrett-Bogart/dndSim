@@ -5,9 +5,9 @@ using System.Web;
 using dndSim.Models.Heroes;
 namespace dndSim.Validate
 {
-    public class ValidateHero
+    public static class ValidateHero
     {
-        public String validateHero(Hero hero, String validSave1, String validSave2)
+        public static String validateHero(Hero hero, String validSave1, String validSave2)
         {
             String correct = "";
             correct += validateSavingThrows(hero, validSave1, validSave2);
@@ -18,7 +18,7 @@ namespace dndSim.Validate
             return correct;
         }
 
-        public String validateProficienctSavingThrows(Hero hero, String s1, String s2)
+        public static String validateProficienctSavingThrows(Hero hero, String s1, String s2)
         {
             String correct = "";
             if (s1 == "StrSave" || s2 == "StrSave")
@@ -49,7 +49,7 @@ namespace dndSim.Validate
             return correct;
         }
 
-        public String validateNonproficientSavingThrows(Hero hero, String s1, String s2)
+        public static String validateNonproficientSavingThrows(Hero hero, String s1, String s2)
         {
             String correct = "";
             if (s1 != "StrSave" && s2 != "StrSave")
@@ -81,14 +81,14 @@ namespace dndSim.Validate
 
         }
 
-        public String validateSavingThrows(Hero hero, String s1, String s2)
+        public static String validateSavingThrows(Hero hero, String s1, String s2)
         {
             String correct = validateProficienctSavingThrows(hero, s1, s2);
 
             return correct;
         }
 
-        public String validateProficiency(int level, int proficiency)
+        public static String validateProficiency(int level, int proficiency)
         {
             String valid = "";
             if (level <= 4 && proficiency != 2)

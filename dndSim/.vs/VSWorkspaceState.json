@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\dndSim",
+    "\\dndSim\\Models",
+    "\\dndSim\\Models\\Equipments",
+    "\\dndSim\\Models\\Spells",
+    "\\dndSim\\Test",
+    "\\dndSim\\Test\\Equipment",
+    "\\dndSim\\Test\\Spells"
+  ],
+  "SelectedNode": "\\dndSim\\Models\\Spells\\Spell.cs",
+  "PreviewInSolutionExplorer": false
+}

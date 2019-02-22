@@ -21,7 +21,7 @@ namespace dndSim.Models.Spells.ClassSpells
             {
                 foreach(String spell in availableSpells )
                 {
-                    if (s.name == spell)
+                    if (s.Name == spell)
                     {
                         allSpells.Add(s);
                         break;

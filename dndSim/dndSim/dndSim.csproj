@@ -160,7 +160,10 @@
     <Compile Include="Test\Heroes\BarbarianTest\TestBarbarian.cs" />
     <Compile Include="Test\Heroes\BarbarianTest\SubClasses\BeserkTest.cs" />
     <Compile Include="Test\Heroes\HeroTest.cs" />
+    <Compile Include="Test\Spells\SpellFactoryTest.cs" />
+    <Compile Include="Test\Spells\SpellTest.cs" />
     <Compile Include="Test\Validator\HeroValidator.cs" />
+    <Compile Include="Validate\SpellValidator.cs" />
     <Compile Include="Validate\ValidateHero.cs" />
     <Compile Include="Validate\ValidateCharacter.cs" />
   </ItemGroup>

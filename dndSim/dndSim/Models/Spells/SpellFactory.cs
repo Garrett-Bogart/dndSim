@@ -9,7 +9,7 @@ namespace dndSim.Models.Spells
     public static class SpellFactory
     {
         static readonly List<Spell> Spells = makeSpells();
-        static bool done = false;
+
 
         private static List<Spell> makeSpells()
         {
@@ -21,9 +21,25 @@ namespace dndSim.Models.Spells
 
             return spells;
         }
+
         public static List<Spell> getSpells()
         {
             return Spells;
+        }
+
+        public static bool addSpell(String name, int level, int range, String action, String concentration, String desc)
+        {
+            bool added = false;
+            try
+            {
+                Spells.Add(new Spell(name, level, range, action, concentration, desc));
+                added = true;
+            }
+            catch(ArgumentException e)
+            {
+                added = false;
+            }
+            return added;
         }
 
 

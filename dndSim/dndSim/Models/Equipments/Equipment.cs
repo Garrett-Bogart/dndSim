@@ -11,6 +11,7 @@ namespace dndSim.Models.Equipments
         public String Name { get; set; }
         public String Description { get; set; }
         public int Type { get; set; }//0: simple melee, 1: simple range, 2: martial melee, 3: martial range, 4: magical melee, 5: magical range, 6: magical armour
+        //make an effects class and then have a list of effects. When a weapon attacks go through the effects to determine what happens.
 
         public Equipment(String Name, int Type, String Description)
         {
