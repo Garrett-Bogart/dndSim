@@ -7,7 +7,7 @@ namespace dndSim.Models.Spells.SpellTree
 {
     public class Node
     {
-        enum color { red, black};
+        //public enum color { red, black};
         public int Color { get; set; }
         public Node Right { get; set; }
         public Node Left { get; set; }
@@ -18,7 +18,15 @@ namespace dndSim.Models.Spells.SpellTree
             Value = s;
             Right = null;
             Left = null;
-            Color = (int) color.black;
+            Color = (int) color.red;
+        }
+
+        public Node(Node node)
+        {
+            Value = node.Value;
+            Right = node.Right;
+            Left = node.Left;
+            Color = node.Color;
         }
 
         public String printNode()
