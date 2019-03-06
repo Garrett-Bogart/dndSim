@@ -22,8 +22,6 @@ namespace dndSim.Test.Spells.SpellTreeTest
         private Spell s6 = new Spell("f", 2, 5, "*", "*", "*");
         private Spell s7 = new Spell("g", 2, 5, "*", "*", "*");
         private Spell s8 = new Spell("h", 2, 5, "*", "*", "*");
-        private Spell s9 = new Spell("i", 2, 5, "*", "*", "*");
-        private Spell s10 = new Spell("j", 2, 5, "*", "*", "*");
         
         private Models.Spells.SpellTree.RBTree t;
 
@@ -35,12 +33,31 @@ namespace dndSim.Test.Spells.SpellTreeTest
             spellsTest.Add(s3);
             spellsTest.Add(s4);
             spellsTest.Add(s5);
-            //spellsTest.Add(s6);
-            /*spellsTest.Add(s7);
+            spellsTest.Add(s6);
+            spellsTest.Add(s7);
             spellsTest.Add(s8);
-            spellsTest.Add(s9);
-            spellsTest.Add(s10);*/
             return spellsTest;
+        }
+
+        public void NodeCheck(Models.Spells.SpellTree.Node node, int expectedColor, String expectedName)
+        {
+            Assert.AreEqual(expectedColor, node.Color);
+            Assert.AreEqual(expectedName, node.Value.Name);
+        }
+
+        public void RootCheck(Models.Spells.SpellTree.RBTree tree)
+        {
+            Assert.AreEqual(1, tree.Root.Color);
+        }
+
+        public void BlackCheck(Models.Spells.SpellTree.Node node )
+        {
+            Assert.AreEqual((int)Models.Spells.SpellTree.color.black, node.Color);
+        }
+
+        public void RedCheck(Models.Spells.SpellTree.Node node)
+        {
+            Assert.AreEqual((int)Models.Spells.SpellTree.color.red, node.Color);
         }
 
         [Test]
@@ -49,7 +66,12 @@ namespace dndSim.Test.Spells.SpellTreeTest
             t = new Models.Spells.SpellTree.RBTree();
 
             t = new Models.Spells.SpellTree.RBTree(s);
-
+            Models.Spells.SpellTree.Node root = t.Root;
+            Assert.AreSame(root, t.Root);
+            root.Color = (int)Models.Spells.SpellTree.color.red;
+            Assert.AreEqual((int)Models.Spells.SpellTree.color.red, t.Root.Color);
+            t.Root.Color = (int)Models.Spells.SpellTree.color.black;
+            Assert.AreEqual((int)Models.Spells.SpellTree.color.black, root.Color);
         }
 
         [Test]
@@ -72,7 +94,7 @@ namespace dndSim.Test.Spells.SpellTreeTest
         }
 
         [Test]
-        public void PrintTreeTest_10_ordered()
+        public void PrintTreeTest_8_ordered()
         {
             t = new Models.Spells.SpellTree.RBTree();
             String orderTest = "";
@@ -82,10 +104,41 @@ namespace dndSim.Test.Spells.SpellTreeTest
                 orderTest += spell.Name + " ";
                 t.Order = "";
                 t.printTree();
-                //Assert.AreEqual(orderTest, t.Order);
+                Assert.AreEqual(orderTest, t.Order);
             }
-            t.Order = "";
-            t.printTree();
+
+            NodeCheck(t.Root, 1, "d");
+                NodeCheck(t.Root.Right, 0, "f");
+                    NodeCheck(t.Root.Right.Left, 1, "e");
+                    NodeCheck(t.Root.Right.Right, 1, "g");
+                        NodeCheck(t.Root.Right.Right.Right, 0, "h");
+            NodeCheck(t.Root.Left, 0, "b");
+                NodeCheck(t.Root.Left.Right, 1, "c");
+                NodeCheck(t.Root.Left.Left, 1, "a");
+            
+
+        }
+
+        [Test]
+        public void PrintTreeTest_8_ReverseOrdered()
+        {
+            t = new Models.Spells.SpellTree.RBTree();
+            String orderTest = "";
+            List<Models.Spells.Spell> spells = spellList();
+            spells.Reverse();
+            foreach (Spell spell in spells)
+            {
+                t.insert(spell);
+            }
+
+            NodeCheck(t.Root, 1, "e");
+                NodeCheck(t.Root.Right, 0, "g");
+                        NodeCheck(t.Root.Right.Left, 1, "f");
+                        NodeCheck(t.Root.Right.Right, 1, "h");
+                NodeCheck(t.Root.Left, 0, "c");
+                    NodeCheck(t.Root.Left.Right, 1, "d");
+                    NodeCheck(t.Root.Left.Left, 1, "b");
+                        NodeCheck(t.Root.Left.Left.Left, 0, "a");
         }
 
         [Test]
@@ -122,7 +175,7 @@ namespace dndSim.Test.Spells.SpellTreeTest
             t = new Models.Spells.SpellTree.RBTree(s5);
             t.insert(s4);
             t.insert(s7);
-            t.insert(s6);// grandchild: RL uncle: L
+            t.insert(s6);// grandchild: RL, uncle: L
             Assert.AreEqual((int)Models.Spells.SpellTree.color.black, t.Root.Left.Color);
             Assert.AreEqual((int)Models.Spells.SpellTree.color.black, t.Root.Right.Color);
             Assert.AreEqual((int)Models.Spells.SpellTree.color.red, t.Root.Right.Left.Color);
@@ -202,8 +255,9 @@ namespace dndSim.Test.Spells.SpellTreeTest
         public void TriangleRotationLRTest()
         {
             t = new Models.Spells.SpellTree.RBTree(s5);//e
-            t.insert(s3);//d
-            t.insert(s4);//c
+            RootCheck(t);
+            t.insert(s3);//c
+            t.insert(s4);//d
 
             Assert.AreEqual("d", t.Root.Value.Name);
             Assert.AreEqual("c", t.Root.Left.Value.Name);
@@ -227,8 +281,84 @@ namespace dndSim.Test.Spells.SpellTreeTest
             Assert.AreEqual("c", t.Root.Right.Value.Name);
 
             Assert.AreEqual((int)Models.Spells.SpellTree.color.black, t.Root.Color);
-            Assert.AreEqual((int)Models.Spells.SpellTree.color.red, t.Root.Left.Color);
             Assert.AreEqual((int)Models.Spells.SpellTree.color.red, t.Root.Right.Color);
+            Assert.AreEqual((int)Models.Spells.SpellTree.color.red, t.Root.Left.Color);
+
+        }
+
+        [Test]
+        public void NonRootRR()
+        {
+            t = new Models.Spells.SpellTree.RBTree(s3);
+            t.insert(s2);
+            t.insert(s4);
+            t.insert(s5);
+
+            RootCheck(t);
+            BlackCheck(t.Root.Right);
+            BlackCheck(t.Root.Left);
+            RedCheck(t.Root.Right.Right);
+
+            Assert.AreEqual("c", t.Root.Value.Name);
+                Assert.AreEqual("d", t.Root.Right.Value.Name);
+                    Assert.IsNull(t.Root.Right.Left);
+                        Assert.AreEqual("e", t.Root.Right.Right.Value.Name);
+                        Assert.IsNull(t.Root.Right.Right.Left);
+                        Assert.IsNull(t.Root.Right.Right.Right);
+            Assert.AreEqual("b", t.Root.Left.Value.Name);
+
+            t.insert(s6);
+
+            Assert.AreEqual("c", t.Root.Value.Name);
+                Assert.AreEqual("e", t.Root.Right.Value.Name);
+                    Assert.AreEqual("f", t.Root.Right.Right.Value.Name);
+                    Assert.AreEqual("d", t.Root.Right.Left.Value.Name);
+                Assert.AreEqual("b", t.Root.Left.Value.Name);
+
+            BlackCheck(t.Root);
+            BlackCheck(t.Root.Right);
+                RedCheck(t.Root.Right.Right);
+                RedCheck(t.Root.Right.Left);
+            BlackCheck(t.Root.Left);
+
+
+        }
+
+        [Test]
+        public void NonRootLL()
+        {
+            t = new Models.Spells.SpellTree.RBTree(s5);//e
+            t.insert(s6);
+            t.insert(s4);
+            t.insert(s3);
+
+            RootCheck(t);
+            BlackCheck(t.Root.Right);
+            BlackCheck(t.Root.Left);
+            RedCheck(t.Root.Left.Left);
+
+            Assert.AreEqual("e", t.Root.Value.Name);
+                Assert.AreEqual("f", t.Root.Right.Value.Name);
+                    Assert.IsNull(t.Root.Right.Left);
+                    Assert.IsNull(t.Root.Right.Right);
+                Assert.AreEqual("d", t.Root.Left.Value.Name);
+                    Assert.AreEqual("c",t.Root.Left.Left.Value.Name);
+                    Assert.IsNull(t.Root.Left.Right);
+
+            t.insert(s2);
+
+            Assert.AreEqual("e", t.Root.Value.Name);
+            Assert.AreEqual("f", t.Root.Right.Value.Name);
+            Assert.AreEqual("c", t.Root.Left.Value.Name);
+            Assert.AreEqual("d", t.Root.Left.Right.Value.Name);
+            Assert.AreEqual("b", t.Root.Left.Left.Value.Name);
+
+            BlackCheck(t.Root);
+            BlackCheck(t.Root.Right);
+            RedCheck(t.Root.Left.Right);
+            RedCheck(t.Root.Left.Left);
+            BlackCheck(t.Root.Left);
+
 
         }
     }

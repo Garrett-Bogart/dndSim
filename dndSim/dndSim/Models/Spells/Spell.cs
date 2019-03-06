@@ -7,7 +7,6 @@ namespace dndSim.Models.Spells
 {
     public class Spell
     {
-
         public String Name { get; set; }
         public int Range { get; set; }
         public int Level { get; set; }
@@ -17,9 +16,9 @@ namespace dndSim.Models.Spells
 
         public Spell(String name, int level, int range,String castTime, String concentration, String desc )
         {
-            if(!Validate.SpellValidator.validateSpell(name, level, range, castTime, concentration))
+            if(!dndSim.Validate.SpellValidator.validateSpell( name,  level,  range,  castTime,  concentration))
             {
-                throw new ArgumentException("Spell: had an invalid argument: " + name);
+                throw new ArgumentException("Spell: invalid spell");
             }
             this.Name = name;
             this.Level = level;

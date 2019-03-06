@@ -5,13 +5,13 @@ using System.Web;
 using dndSim.Models.Heroes;
 namespace dndSim.Validate
 {
-    public static class ValidateCharacter
+    public class ValidateCharacter
     {
         private const int LOWESTATTVALUE = 3;
         private const int HIGHESTATTVALUE = 20;
         private const int BARBHIGHVALUE = 24;
 
-        public static String validateAttributes(String error, int value)
+        public String validateAttributes(String error, int value)
         {
             String status = "";
             if (value > HIGHESTATTVALUE || value < LOWESTATTVALUE)
@@ -21,7 +21,7 @@ namespace dndSim.Validate
             return status;
         }
 
-        public static String validateAttributesBarabarian(String error, int value)
+        public String validateAttributesBarabarian(String error, int value)
         {
             String status = "";
             if (value > BARBHIGHVALUE || value < LOWESTATTVALUE)

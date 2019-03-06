@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-
+using NUnit.Framework;
 namespace dndSim.Models.Spells.SpellTree
 {
     public enum color { red, black };
@@ -10,80 +10,74 @@ namespace dndSim.Models.Spells.SpellTree
     {
         public int Count { get; set; } = 0;
         public Node Root { get; set; }
-        public Node Tracker { get; set; }
         public String Order { get; set; } = "";
         public RBTree()
         {
             Root = null;
-            Tracker = null; 
         }
 
         public RBTree(Spell s)
         {
             Root = new Node(s);
-            Tracker = Root;
             Count++;
-            //check(Root);
+            checkRoot();
         }
 
-        public void insertLeft(Spell s, Node tracker)//might have to be by reference
+        public void insertLeft(Spell s, Node current)//might have to be by reference
         {
-            if(tracker.Left == null)
+            if(current.Left == null)
             {
-                tracker.Left = new Node(s);
+                current.Left = new Node(s);
                 Count++;
             }
             else
             {
-                insert(s, tracker.Left);// go to new node
+                insert(s, current.Left);// go to new node
             }
         }
 
-        public void insertRight(Spell s, Node tracker)
+        public void insertRight(Spell s, Node current)
         {
-            if(tracker.Right == null)
+            if(current.Right == null)
             {
-                tracker.Right = new Node(s);
+                current.Right = new Node(s);
                 Count++;
             }
             else
             {
-                insert(s, tracker.Right);
+                insert(s, current.Right);
             }
         }
 
-        public void insert(Spell s, Node tracker)
+        public void insert(Spell s, Node current)
         {
-            if(string.Compare(s.Name, tracker.Value.Name) == -1)
+            if(string.Compare(s.Name, current.Value.Name) == -1)
             {
-                insertLeft(s, tracker);
+                insertLeft(s, current);
             }
-            else if(string.Compare(s.Name, tracker.Value.Name) == 1)
+            else if(string.Compare(s.Name, current.Value.Name) == 1)
             {
-                insertRight(s, tracker);
+                insertRight(s, current);
             }
-            check(ref tracker);
+            check(ref current);
         }
 
         public void insert(Spell s)
         {
-            Tracker = Root;
             if(Root == null)
             {
                 Root = new Node(s);
                 Count++;
             }
-            else if(string.Compare(s.Name, Tracker.Value.Name) == -1)
+            else if(string.Compare(s.Name, Root.Value.Name) == -1)
             {
-                Tracker = Root.Left;
-                insertLeft(s, Tracker);
+                insertLeft(s, Root);
             }
             else if(string.Compare(s.Name, Root.Value.Name) == 1)
             {
-                Tracker = Root.Right;
-                insertRight(s, Tracker);
+                insertRight(s, Root);
             }
-            Root.Color = (int)color.black;
+            checkRoot();
         }
 
         public void rotateRR(ref Node gp, ref Node p, ref Node c, ref Node s)
@@ -104,42 +98,54 @@ namespace dndSim.Models.Spells.SpellTree
         {
             bool isRoot = current.Value.Name == Root.Value.Name ? true : false;
             bool changed = false;
-            
-            if(current.Color == (int)color.black)
+            Node grandparent = current;
+            Node parent = null;
+            Node temp = null;
+            if (current.Color == (int)color.black)
             {
+                //RR
                 bool uncle = (current.Left == null || current.Left.Color == (int)color.black) ? true : false;
                 if(current.Right != null && current.Right.Color == (int)color.red && uncle)
                 {
                     if (current.Right.Right != null && current.Right.Right.Color == (int)color.red)
                     {
-                        Node parent = current.Right;
-                        Node child = current.Right.Right;
-                        Node sibling = current.Right.Left;
-                        rotateRR(ref current, ref parent, ref child, ref sibling);
+                        temp = new Node(current);
+                        parent = current.Right;
+
+                        temp.Right = parent.Left;
+                        parent.Left = temp;
+
+                        parent.Color = (int)color.black;
+                        temp.Color = (int)color.red;
+                        changed = true;
+                    }
+                }
+                //LL
+                if (current.Left != null && current.Left.Color == (int)color.red)
+                {
+                    uncle = (current.Right == null || current.Right.Color == (int)color.black) ? true : false;
+                    if (current.Left.Left != null && current.Left.Left.Color == (int)color.red && uncle)
+                    {
+                        temp = new Node(current);
+                        parent = current.Left;
+
+                        temp.Left = parent.Right;
+                        parent.Right = temp;
+
+                        parent.Color = (int)color.black;
+                        temp.Color = (int)color.red;
                         changed = true;
                     }
                 }
             }
 
-            if(current.Left != null && current.Left.Color == (int)color.red)
+            if (changed && parent != null)
             {
-                bool uncle = (current.Right == null || current.Right.Color == (int)color.black) ? true : false;
-                if (current.Left.Left != null && current.Left.Left.Color == (int)color.red && uncle)
-                {
-                    Node currentHolder = current;
-                    Node siblingHolder = current.Left.Right;
-                    current = current.Left;
-                    current.Left = current.Left;
-                    currentHolder.Left = siblingHolder;
-                    current.Right = currentHolder;
-                    current.Color = (int)color.black;
-                    current.Right.Color = (int)color.red;
-                    changed = true;
-                }
+                current.Value = parent.Value;
+                current.Right = parent.Right;
+                current.Left = parent.Left;
             }
-
-            if (isRoot && changed)
-                Root = current;
+                
         }
 
         public void UnbalancedTriangle(ref Node current)
@@ -151,10 +157,11 @@ namespace dndSim.Models.Spells.SpellTree
                     bool uncle = (current.Left == null || current.Left.Color == (int)color.black) ? true : false;
                     if (current.Right.Left != null && current.Right.Left.Color == (int)color.red && uncle)
                     {
-                        Node parentHolder = current.Right;
-                        current.Right = current.Right.Left;
-                        parentHolder.Left = current.Right.Right;
-                        current.Right.Right = parentHolder;
+                        Node parent = current.Right;
+                        Node child = current.Right.Left;
+                        current.Right = child;
+                        parent.Left = child.Right;
+                        child.Right = parent;
                     }
                 }
                 
@@ -164,10 +171,11 @@ namespace dndSim.Models.Spells.SpellTree
                     {
                         if(current.Left.Right != null && current.Left.Right.Color == (int)color.red && uncle)
                         {
-                            Node parentHolder = current.Left;
-                            current.Left = current.Left.Right;
-                            parentHolder.Right = current.Left.Left;
-                            current.Left.Left = parentHolder;
+                            Node parent = current.Left;
+                            Node child = current.Left.Right; 
+                            current.Left = child;
+                            parent.Right = child.Left;
+                            child.Left = parent;
                         }
                     }
                 }
@@ -211,11 +219,17 @@ namespace dndSim.Models.Spells.SpellTree
 
         public void check(ref Node current)
         {
-            /*RedUncle(current);
+            RedUncle(current);
             UnbalancedTriangle(ref current);
-            UnbalancedLine(ref current);*/
+            UnbalancedLine(ref current);
             Root.Color = (int)color.black;
         }
+        public void checkRoot()
+        {
+            Node root = Root;
+            check(ref root);
+        }
+
 
         public void printTree()
         {
